@@ -189,8 +189,8 @@ node_modules
 /coverage
 /coverage.json
 
-# Hardhat Ignition default folder for deployments against a local node
-ignition/deployments/chain-31337
+# Hardhat Ignition deployments
+ignition/deployments
 
 # bun lockfile (for now)
 bun.lockb
