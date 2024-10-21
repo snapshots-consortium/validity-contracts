@@ -221,7 +221,7 @@ describe('Snapshots Contract', function () {
 
       await expect(snapshots.connect(validator2).submitHash(UUID, HASH))
         .to.emit(snapshots, 'SnapshotCompleted')
-        .withArgs(UUID, HASH)
+        .withArgs(UUID, HASH, 2, 2, validator2.address)
 
       const snapshot = await snapshots.snapshots(UUID)
       expect(snapshot.isValid).to.be.true

@@ -17,7 +17,7 @@ const SnapshotsModule = buildModule("SnapshotsModule", (m) => {
    *    address[] memory _initialValidators,
    *    address[] memory _initialRequesters
    */
-  const Snapshots = m.contract("Snapshots", [120, 2, 3, initialValidators, initialRequesters])
+  const Snapshots = m.contract("Snapshots", [180, 2, 3, initialValidators, initialRequesters])
 
   return { Snapshots }
 })

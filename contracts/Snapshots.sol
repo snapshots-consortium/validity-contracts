@@ -37,7 +37,7 @@ contract Snapshots {
 
     // Events
     event SnapshotRequested(
-        string indexed uuid,
+        string uuid,
         string url,
         string element,
         address requester,
@@ -46,8 +46,8 @@ contract Snapshots {
         uint256 votesRequiredForMajority
     );
 
-    event SnapshotCompleted(string indexed uuid, bytes32 consensusHash);
-    event SnapshotFinalized(string indexed uuid, bool isValid);
+    event SnapshotCompleted(string uuid, bytes32 consensusHash, uint256 voteCount, uint256 totalVotes, address validator);
+    event SnapshotFinalized(string uuid, bool isValid);
     event ValidatorUpdated(address indexed account, bool isValidator);
     event RequesterUpdated(address indexed account, bool isRequester);
 
@@ -197,7 +197,7 @@ contract Snapshots {
             snapshot.isValid = true;
             snapshot.consensusHash = _hash;
             history[snapshot.url].push(_uuid);
-            emit SnapshotCompleted(_uuid, _hash);
+            emit SnapshotCompleted(_uuid, _hash, snapshot.voteCount[_hash], snapshot.totalVotes, msg.sender);
         }
 
         // Check if all validatores voted
