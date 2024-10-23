@@ -221,7 +221,7 @@ describe('Snapshots Contract', function () {
 
       await expect(snapshots.connect(validator2).submitHash(UUID, HASH))
         .to.emit(snapshots, 'SnapshotCompleted')
-        .withArgs(UUID, HASH, 2, 2, validator2.address)
+        .withArgs(UUID, HASH, 2, validator2.address)
 
       const snapshot = await snapshots.snapshots(UUID)
       expect(snapshot.isValid).to.be.true
@@ -234,7 +234,7 @@ describe('Snapshots Contract', function () {
       await snapshots.connect(validator2).submitHash(UUID, ANOTHER_HASH)
       await expect(snapshots.connect(validator3).submitHash(UUID, YET_ANOTHER_HASH))
         .to.emit(snapshots, 'SnapshotFinalized')
-        .withArgs(UUID, false) // Since consensus was not reached
+        .withArgs(UUID, false, 3, validator3.address) // Since consensus was not reached
 
       const snapshot = await snapshots.snapshots(UUID)
       expect(snapshot.isValid).to.be.false
@@ -251,8 +251,8 @@ describe('Snapshots Contract', function () {
       const consensusHash = await snapshots.getConsensusHash(UUID)
       expect(consensusHash).to.equal(HASH)
 
-      const winningVoteCount = await snapshots.getWinningVoteCount(UUID)
-      expect(winningVoteCount).to.equal(2)
+      const votes = await snapshots.getVotes(UUID)
+      expect(votes).to.deep.equal([2, 3])
     })
 
     it('should not verify the snapshot if consensus is not reached', async function () {
@@ -470,9 +470,9 @@ describe('Snapshots Contract', function () {
       expect(consensusHash).to.equal(HASH)
     })
 
-    it('should retrieve the winning vote count correctly', async function () {
-      const winningVoteCount = await snapshots.getWinningVoteCount(UUID)
-      expect(winningVoteCount).to.equal(2)
+    it('should retrieve the votes correctly', async function () {
+      const votes = await snapshots.getVotes(UUID)
+      expect(votes).to.deep.equal([2, 2])
     })
 
     it('should retrieve history correctly', async function () {

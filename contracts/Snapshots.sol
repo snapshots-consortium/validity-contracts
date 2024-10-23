@@ -46,8 +46,8 @@ contract Snapshots {
         uint256 votesRequiredForMajority
     );
 
-    event SnapshotCompleted(string uuid, bytes32 consensusHash, uint256 voteCount, uint256 totalVotes, address validator);
-    event SnapshotFinalized(string uuid, bool isValid);
+    event SnapshotCompleted(string uuid, bytes32 consensusHash, uint256 totalVotes, address validator);
+    event SnapshotFinalized(string uuid, bool isValid, uint256 totalVotes, address validator);
     event ValidatorUpdated(address indexed account, bool isValidator);
     event RequesterUpdated(address indexed account, bool isRequester);
 
@@ -197,12 +197,12 @@ contract Snapshots {
             snapshot.isValid = true;
             snapshot.consensusHash = _hash;
             history[snapshot.url].push(_uuid);
-            emit SnapshotCompleted(_uuid, _hash, snapshot.voteCount[_hash], snapshot.totalVotes, msg.sender);
-        }
+            emit SnapshotCompleted(_uuid, _hash, snapshot.totalVotes, msg.sender);
+        } 
 
         // Check if all validatores voted
         if (snapshot.totalVotes == snapshot.potentialVotes) {
-            emit SnapshotFinalized(_uuid, snapshot.isValid);
+            emit SnapshotFinalized(_uuid, snapshot.isValid, snapshot.totalVotes, msg.sender);
         }
     }
 
@@ -292,12 +292,14 @@ contract Snapshots {
         return snapshots[_uuid].consensusHash;
     }
 
-    // Get the winning vote count for a given snapshot UUID
-    function getWinningVoteCount(
+    // Get the winning vote count and total votes for a given snapshot UUID
+    function getVotes(
         string memory _uuid
-    ) public view returns (uint256) {
-        return snapshots[_uuid].voteCount[snapshots[_uuid].consensusHash];
+    ) public view returns (uint256, uint256) {
+        return (snapshots[_uuid].voteCount[snapshots[_uuid].consensusHash],
+            snapshots[_uuid].totalVotes);
     }
+
 
     // todo: add more view functions
 }
