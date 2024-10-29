@@ -234,7 +234,7 @@ describe('Snapshots Contract', function () {
       await snapshots.connect(validator2).submitHash(UUID, ANOTHER_HASH)
       await expect(snapshots.connect(validator3).submitHash(UUID, YET_ANOTHER_HASH))
         .to.emit(snapshots, 'SnapshotFinalized')
-        .withArgs(UUID, false, 3, validator3.address) // Since consensus was not reached
+        .withArgs(UUID, false, validator3.address) // Since consensus was not reached
 
       const snapshot = await snapshots.snapshots(UUID)
       expect(snapshot.isValid).to.be.false

@@ -47,7 +47,7 @@ contract Snapshots {
     );
 
     event SnapshotCompleted(string uuid, bytes32 consensusHash, uint256 totalVotes, address validator);
-    event SnapshotFinalized(string uuid, bool isValid, uint256 totalVotes, address validator);
+    event SnapshotFinalized(string uuid, bool isValid, address validator);
     event ValidatorUpdated(address indexed account, bool isValidator);
     event RequesterUpdated(address indexed account, bool isRequester);
 
@@ -202,7 +202,7 @@ contract Snapshots {
 
         // Check if all validatores voted
         if (snapshot.totalVotes == snapshot.potentialVotes) {
-            emit SnapshotFinalized(_uuid, snapshot.isValid, snapshot.totalVotes, msg.sender);
+            emit SnapshotFinalized(_uuid, snapshot.isValid, msg.sender);
         }
     }
 
