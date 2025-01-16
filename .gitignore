@@ -176,6 +176,8 @@ dist
 
 node_modules
 .env
+.env.staging
+.env.production
 
 # Hardhat files
 /cache

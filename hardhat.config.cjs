@@ -18,6 +18,16 @@ module.exports = {
     polygon_amoy: {
       url: process.env.RPC_PROVIDER_URL,
       accounts: [process.env.OWNER_PRIVATE_KEY]
+    },
+    polygon_mainnet: {
+      url: process.env.RPC_PROVIDER_URL,
+      accounts: [process.env.OWNER_PRIVATE_KEY]
     }
+  },
+  etherscan: {
+    apiKey: process.env.POLYGONSCAN_API_KEY
+  },
+  sourcify: {
+    enabled: true
   }
 };
