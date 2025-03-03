@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 
-
 describe("HashStore Contract", function () {
     let HashStore, hashStore, owner
     
@@ -11,39 +10,44 @@ describe("HashStore Contract", function () {
     })
 
     it("Should store a hash with a timestamp", async function () {
-        const documentHash = ethers.keccak256(ethers.toUtf8Bytes("test document"))
+        const uuid = "123e4567-e89b-12d3-a456-426614174000"
+        const documentHash = ethers.keccak256(ethers.encodeBytes32String("test document"))
         
-        const tx = await hashStore.storeHash(documentHash)
+        const tx = await hashStore.storeHash(uuid, documentHash)
         await tx.wait()
         
-        const storedTimestamp = await hashStore.timestamps(documentHash)
-        expect(storedTimestamp).to.be.gt(0)
+        const entry = await hashStore.entries(uuid)
+        expect(entry.timestamp).to.be.gt(0)
+        expect(entry.hash).to.equal(documentHash)
     })
 
-    it("Should not allow storing the same hash twice", async function () {
-        const documentHash = ethers.keccak256(ethers.toUtf8Bytes("test document"))
+    it("Should not allow storing the same UUID twice", async function () {
+        const uuid = "123e4567-e89b-12d3-a456-426614174000"
+        const documentHash = ethers.keccak256(ethers.encodeBytes32String("test document"))
         
-        await hashStore.storeHash(documentHash)
+        await hashStore.storeHash(uuid, documentHash)
         
-        await expect(hashStore.storeHash(documentHash)).to.be.revertedWith("Hash already stored")
+        await expect(hashStore.storeHash(uuid, documentHash)).to.be.revertedWith("UUID already exists")
     })
 
-    it("Should return correct timestamp for a stored hash", async function () {
-        const documentHash = ethers.keccak256(ethers.toUtf8Bytes("another document"))
+    it("Should return correct timestamp and hash for a stored UUID", async function () {
+        const uuid = "987e6543-e21b-45d3-b123-123456789abc"
+        const documentHash = ethers.keccak256(ethers.encodeBytes32String("another document"))
         
-        const tx = await hashStore.storeHash(documentHash)
+        const tx = await hashStore.storeHash(uuid, documentHash)
         const receipt = await tx.wait()
         const blockTimestamp = (await ethers.provider.getBlock(receipt.blockNumber)).timestamp
         
-        const storedTimestamp = await hashStore.timestamps(documentHash)
-        expect(storedTimestamp).to.equal(blockTimestamp)
+        const entry = await hashStore.entries(uuid)
+        expect(entry.timestamp).to.equal(blockTimestamp)
+        expect(entry.hash).to.equal(documentHash)
     })
 
-    it("Should return 0 for an unregistered hash", async function () {
-        const unknownHash = ethers.keccak256(ethers.toUtf8Bytes("unknown document"))
+    it("Should return empty hash and timestamp 0 for an unknown UUID", async function () {
+        const unknownUUID = "00000000-0000-0000-0000-000000000000"
         
-        const storedTimestamp = await hashStore.timestamps(unknownHash)
-        expect(storedTimestamp).to.equal(0)
+        const entry = await hashStore.entries(unknownUUID)
+        expect(entry.timestamp).to.equal(0)
+        expect(entry.hash).to.equal(ethers.ZeroHash)
     })
 })
-
